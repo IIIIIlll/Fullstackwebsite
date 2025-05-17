@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Admin Panel</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 text-gray-900">
+  <div class="max-w-5xl mx-auto py-10 px-4">
+    <h1 class="text-4xl font-bold mb-6">Admin Panel - Orders</h1>
+    {% for order in orders %}
+    <div class="bg-white p-6 rounded-xl shadow mb-4">
+      <h2 class="font-bold text-lg mb-2">Order #{{ order.id }}</h2>
+      <p><strong>Name:</strong> {{ order.customer_name }}</p>
+      <p><strong>Address:</strong> {{ order.address }}</p>
+      <p><strong>Phone:</strong> {{ order.phone }}</p>
+      <ul class="list-disc ml-6">
+        {% for item_id in order.items.split(',') %}
+        <li>{{ all_items[ item_id | int ].name }}</li>
+        {% endfor %}
+      </ul>
+      <p><strong>Total:</strong> ${{ order.total }}</p>
+      <p><strong>Status:</strong> {% if order.fulfilled %}Fulfilled{% else %}<a href="/fulfill/{{ order.id }}" class="text-blue-600 underline">Mark as Fulfilled</a>{% endif %}</p>
+    </div>
+    {% endfor %}
+  </div>
+</body>
+</html>
