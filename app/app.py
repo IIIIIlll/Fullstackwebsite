@@ -1,3 +1,4 @@
+
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -16,6 +17,7 @@ class MenuItem(db.Model):
     name = db.Column(db.String(100), nullable=False)
     price = db.Column(db.Float, nullable=False)
     description = db.Column(db.String(200), nullable=True)
+    image_url = db.Column(db.String(300), nullable=True) 
 
 class Order(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -38,7 +40,6 @@ class User(db.Model):
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
-
 
 @app.route('/user/login', methods=['GET', 'POST'])
 def user_login():
@@ -69,7 +70,6 @@ def user_register():
             return redirect(url_for('user_login'))
     return render_template('register.html')
 
-
 @app.route('/user/logout')
 def user_logout():
     session.pop('user_logged_in', None)
@@ -97,17 +97,55 @@ def menu():
 
 @app.route('/add_to_cart/<int:item_id>')
 def add_to_cart(item_id):
-    cart = session.get('cart', [])
-    cart.append(item_id)
+    cart = session.get('cart', {})
+    if isinstance(cart, list):
+        cart = {}
+    item_id_str = str(item_id)
+    cart[item_id_str] = cart.get(item_id_str, 0) + 1
     session['cart'] = cart
     return redirect(url_for('menu'))
 
+@app.route('/add/<int:item_id>')
+def add_item(item_id):
+    cart = session.get('cart', {})
+    item_id_str = str(item_id)
+    cart[item_id_str] = cart.get(item_id_str, 0) + 1
+    session['cart'] = cart
+    return redirect(url_for('cart'))
+
+@app.route('/remove/<int:item_id>')
+def remove_item(item_id):
+    cart = session.get('cart', {})
+    item_id_str = str(item_id)
+    if item_id_str in cart:
+        if cart[item_id_str] > 1:
+            cart[item_id_str] -= 1
+        else:
+            cart.pop(item_id_str)
+    session['cart'] = cart
+    return redirect(url_for('cart'))
+
 @app.route('/cart')
 def cart():
-    cart = session.get('cart', [])
-    items = MenuItem.query.filter(MenuItem.id.in_(cart)).all()
-    total = sum(item.price for item in items)
-    return render_template('cart.html', items=items, total=total)
+    cart = session.get('cart', {})
+    item_ids = list(cart.keys())
+    items = MenuItem.query.filter(MenuItem.id.in_(item_ids)).all()
+
+    cart_items = []
+    total = 0
+    for item in items:
+        quantity = cart[str(item.id)]
+        subtotal = item.price * quantity
+        cart_items.append({
+            'id': item.id,
+            'name': item.name,
+            'price': item.price,
+            'quantity': quantity,
+            'subtotal': subtotal
+        })
+        total += subtotal
+
+    return render_template('cart.html', items=cart_items, total=total)
 
 @app.route('/checkout', methods=['GET', 'POST'])
 def checkout():
@@ -115,14 +153,15 @@ def checkout():
         name = request.form['name']
         address = request.form['address']
         phone = request.form['phone']
-        cart = session.get('cart', [])
-        items = MenuItem.query.filter(MenuItem.id.in_(cart)).all()
-        total = sum(item.price for item in items)
-        item_ids = ','.join(map(str, cart))
-        new_order = Order(customer_name=name, address=address, phone=phone, items=item_ids, total=total)
+        cart = session.get('cart', {})
+        item_ids = list(cart.keys())
+        items = MenuItem.query.filter(MenuItem.id.in_(item_ids)).all()
+        total = sum(item.price * cart[str(item.id)] for item in items)
+        item_str = ','.join([f"{item.id}:{cart[str(item.id)]}" for item in items])
+        new_order = Order(customer_name=name, address=address, phone=phone, items=item_str, total=total)
         db.session.add(new_order)
         db.session.commit()
-        session['cart'] = []
+        session['cart'] = {}
         return redirect(url_for('confirmation'))
     return render_template('checkout.html')
 
@@ -164,13 +203,25 @@ def fulfill(order_id):
     db.session.commit()
     return redirect(url_for('admin'))
 
+def seed_menu_items():
+    if MenuItem.query.first():
+        print(" Menu already seeded.")
+        return
+    sample_items = [
+        MenuItem(name="Margherita Pizza", price=9.99, description="Classic cheese pizza with basil."),
+        MenuItem(name="BBQ Burger", price=11.49, description="Beef burger with BBQ sauce and onion rings."),
+        MenuItem(name="Caesar Salad", price=7.99, description="Romaine lettuce with creamy Caesar dressing."),
+        MenuItem(name="Sushi Platter", price=14.99, description="Assorted sushi rolls with soy sauce."),
+        MenuItem(name="Pasta Carbonara", price=12.49, description="Creamy pasta with bacon and parmesan."),
+    ]
+    db.session.bulk_save_objects(sample_items)
+    db.session.commit()
+    print(" Menu seeded.")
+
 if __name__ == '__main__':
-    if not os.path.exists('restaurant.db'):
-        with app.app_context():
+    with app.app_context():
+        if not os.path.exists('restaurant.db'):
             db.create_all()
-            if not AdminUser.query.filter_by(username='admin').first():
-                admin = AdminUser(username='admin')
-                admin.set_password('admin123')
-                db.session.add(admin)
-                db.session.commit()
+            print("Database created.")
+        seed_menu_items()
     app.run(debug=True)

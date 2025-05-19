@@ -5,16 +5,19 @@
   <title>Cart</title>
   <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="bg-[#fefce8] text-gray-800 font-sans">
-  <div class="max-w-3xl mx-auto py-12 px-4">
-    <h1 class="text-4xl font-bold mb-6 text-center">Your Cart</h1>
-    <ul class="space-y-4">
-      {% for item in items %}
-      <li class="bg-white p-4 rounded-xl shadow flex justify-between items-center">
-        <span>{{ item.name }}</span>
-        <span class="font-semibold">${{ item.price }}</span>
-      </li>
-      {% endfor %}
+{% for item in items %}
+<li class="flex justify-between items-center bg-white p-3 rounded shadow">
+  <div>
+    <span class="font-medium">{{ item.name }}</span>
+    <div class="text-sm text-gray-500">
+      Quantity: {{ item.quantity }}
+      <a href="{{ url_for('add_item', item_id=item.id) }}" class="ml-2 px-2 py-1 bg-green-500 text-white rounded">+</a>
+      <a href="{{ url_for('remove_item', item_id=item.id) }}" class="ml-1 px-2 py-1 bg-red-500 text-white rounded">−</a>
+    </div>
+  </div>
+  <span class="font-semibold">${{ item.subtotal | round(2) }}</span>
+</li>
+{% endfor %}
     </ul>
     <p class="text-right mt-6 text-xl font-bold">Total: ${{ total }}</p>
     <div class="text-center mt-6">

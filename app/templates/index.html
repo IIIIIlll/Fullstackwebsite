@@ -1,23 +1,99 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"><title>Home</title>
+  <meta charset="UTF-8" />
+  <title>Home</title>
   <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const slides = document.querySelectorAll('.carousel-slide');
+      let current = 0;
+      function showSlide(index) {
+        slides.forEach((slide, i) => {
+          slide.classList.toggle('hidden', i !== index);
+        });
+      }
+      setInterval(() => {
+        current = (current + 1) % slides.length;
+        showSlide(current);
+      }, 4000);
+    });
+  </script>
 </head>
 <body class="bg-neutral-100 text-gray-800 font-sans">
-  <nav class="bg-white shadow-md p-4 flex justify-between items-center">
-    <span class="text-xl font-bold">My Restaurant</span>
-    <div class="space-x-4">
-      <a href="/" class="text-gray-700 hover:text-black">Home</a>
-      <a href="/menu" class="text-gray-700 hover:text-black">Menu</a>
-      <a href="/cart" class="text-gray-700 hover:text-black">Cart</a>
-      <a href="/user/login" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Login</a>
-    </div>
-  </nav>
-  <div class="text-center py-20 px-6">
-    <h1 class="text-5xl font-extrabold mb-4">Welcome to Our Kitchen</h1>
-    <p class="text-xl text-gray-600 mb-8">Fresh food. Fast service. Family atmosphere.</p>
-    <a href="/menu" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 text-lg">View Menu</a>
+
+  <!-- Navbar -->
+  <nav class="bg-white shadow-md p-4 flex justify-between items-center sticky top-0 z-10">
+  <span class="text-xl font-bold">My Restaurant</span>
+  <div class="space-x-4">
+    <a href="{{ url_for('index') }}" class="text-gray-700 hover:text-black">Home</a>
+    <a href="{{ url_for('menu') }}" class="text-gray-700 hover:text-black">Menu</a>
+    <a href="{{ url_for('cart') }}" class="text-gray-700 hover:text-black">Cart</a>
+    <a href="{{ url_for('user_login') }}" class="bg-blue-600 text-white px-3 py-1 rounded hover:bg-blue-700">Login</a>
   </div>
+</nav>
+
+
+  <!-- Hero Section -->
+  <section class="relative h-[70vh] bg-cover bg-center" style="background-image: url('https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.pexels.com%2Fsearch%2Frestaurant%2F&psig=AOvVaw12UG_x6TYmBqtWRvHPnXMc&ust=1747709800616000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCLidpMPEro0DFQAAAAAdAAAAABAK');">
+    <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-center text-white px-4">
+      <div>
+        <h1 class="text-5xl font-extrabold mb-4">Welcome to Our Kitchen</h1>
+        <p class="text-xl mb-6">Fresh food. Fast service. Family atmosphere.</p>
+        <a href="{{ url_for('menu') }}" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 text-lg">View Menu</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Carousel -->
+  <section class="py-10 px-4 max-w-5xl mx-auto">
+    <div class="relative w-full overflow-hidden rounded-lg shadow-lg">
+      <div class="carousel-slide transition duration-700 ease-in-out">
+        <img src="{{ url_for('static', filename='images/pizza.jpg') }}" alt="Fast Delivery" class="mx-auto mb-4 rounded-full" />
+
+      </div>
+      <div class="carousel-slide hidden transition duration-700 ease-in-out">
+         <img src="{{ url_for('static', filename='images/sushi.png') }}" alt="sushi" class="mx-auto mb-4 rounded-full" />
+      </div>
+      <div class="carousel-slide hidden transition duration-700 ease-in-out">
+         <img src="{{ url_for('static', filename='images/burger.png') }}" alt="burger" class="mx-auto mb-4 rounded-full" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Feature Section -->
+  <section class="py-12 bg-white">
+    <div class="max-w-6xl mx-auto px-4 grid md:grid-cols-3 gap-8 text-center">
+      <div>
+        <img src="https://www.google.com/url?sa=i&url=https%3A%2F%2Fcolonialdomestics.com%2F10-qualities-of-a-successful-chef%2F&psig=AOvVaw1n_2NSBzupsq8QOnjkH8Nt&ust=1747710017273000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCKjP4qvFro0DFQAAAAAdAAAAABAE" class="mx-auto mb-4 rounded-full" alt="Chef" />
+        <h3 class="text-xl font-semibold mb-2">Expert Chefs</h3>
+        <p class="text-gray-600">Our chefs bring decades of experience and creativity to every dish.</p>
+      </div>
+      <div>
+        <img src="{{ url_for('static', filename='images/fast-delivery.jpg') }}" alt="Fast Delivery" class="mx-auto mb-4 rounded-full" />
+
+        <h3 class="text-xl font-semibold mb-2">Fast Delivery</h3>
+        <p class="text-gray-600">Get your favorite meals delivered hot and fresh in record time.</p>
+      </div>
+      <div>
+        <img src="https://www.google.com/imgres?q=5%20star%20health%20rating&imgurl=https%3A%2F%2Fwww.food.gov.uk%2Fsites%2Fdefault%2Ffiles%2Fstyles%2Fpromo_large%2Fpublic%2Fmedia%2Fimage%2Ffood-hygiene-Rating%25205_a_preview.jpeg%3Fitok%3Dao2_ogm4&imgrefurl=https%3A%2F%2Fwww.food.gov.uk%2Fsafety-hygiene%2Ffood-hygiene-rating-scheme&docid=0Byx62F2lGKV4M&tbnid=JQT1iJsA4hConM&vet=12ahUKEwivmPnOxa6NAxVEVEEAHVj3HloQM3oECBoQAA..i&w=720&h=475&hcb=2&ved=2ahUKEwivmPnOxa6NAxVEVEEAHVj3HloQM3oECBoQAA" class="mx-auto mb-4 rounded-full" alt="Healthy Food" />
+        <h3 class="text-xl font-semibold mb-2">Healthy Options</h3>
+        <p class="text-gray-600">Choose from a variety of delicious, health-conscious dishes.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="bg-gray-900 text-white py-8 mt-12">
+    <div class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center text-sm">
+      <p>&copy; 2025 My Restaurant. All rights reserved.</p>
+      <div class="space-x-4 mt-4 md:mt-0">
+        <a href="#" class="hover:underline">Privacy Policy</a>
+        <a href="#" class="hover:underline">Contact</a>
+        <a href="#" class="hover:underline">Support</a>
+      </div>
+    </div>
+  </footer>
+
 </body>
 </html>
