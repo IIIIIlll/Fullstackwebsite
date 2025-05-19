@@ -35,7 +35,12 @@
 
 
   <!-- Hero Section -->
-  <section class="relative h-[70vh] bg-cover bg-center" style="background-image: url('https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.pexels.com%2Fsearch%2Frestaurant%2F&psig=AOvVaw12UG_x6TYmBqtWRvHPnXMc&ust=1747709800616000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCLidpMPEro0DFQAAAAAdAAAAABAK');">
+  <section class="relative h-[70vh] bg-cover bg-center">
+ <img
+  src="{{ url_for('static', filename='images/footer-bg.jpg') }}"
+  alt="Pizza"
+  class="w-full h-[70vh] object-cover object-center"
+/>
     <div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center text-center text-white px-4">
       <div>
         <h1 class="text-5xl font-extrabold mb-4">Welcome to Our Kitchen</h1>
@@ -65,18 +70,18 @@
   <section class="py-12 bg-white">
     <div class="max-w-6xl mx-auto px-4 grid md:grid-cols-3 gap-8 text-center">
       <div>
-        <img src="https://www.google.com/url?sa=i&url=https%3A%2F%2Fcolonialdomestics.com%2F10-qualities-of-a-successful-chef%2F&psig=AOvVaw1n_2NSBzupsq8QOnjkH8Nt&ust=1747710017273000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCKjP4qvFro0DFQAAAAAdAAAAABAE" class="mx-auto mb-4 rounded-full" alt="Chef" />
+        <img src="{{ url_for('static', filename='images/1.png') }}" alt="burger" class="mx-auto mb-4 rounded-full" />
         <h3 class="text-xl font-semibold mb-2">Expert Chefs</h3>
         <p class="text-gray-600">Our chefs bring decades of experience and creativity to every dish.</p>
       </div>
       <div>
-        <img src="{{ url_for('static', filename='images/fast-delivery.jpg') }}" alt="Fast Delivery" class="mx-auto mb-4 rounded-full" />
+         <img src="{{ url_for('static', filename='images/2.png') }}" alt="burger" class="mx-auto mb-4 rounded-full" />
 
         <h3 class="text-xl font-semibold mb-2">Fast Delivery</h3>
         <p class="text-gray-600">Get your favorite meals delivered hot and fresh in record time.</p>
       </div>
       <div>
-        <img src="https://www.google.com/imgres?q=5%20star%20health%20rating&imgurl=https%3A%2F%2Fwww.food.gov.uk%2Fsites%2Fdefault%2Ffiles%2Fstyles%2Fpromo_large%2Fpublic%2Fmedia%2Fimage%2Ffood-hygiene-Rating%25205_a_preview.jpeg%3Fitok%3Dao2_ogm4&imgrefurl=https%3A%2F%2Fwww.food.gov.uk%2Fsafety-hygiene%2Ffood-hygiene-rating-scheme&docid=0Byx62F2lGKV4M&tbnid=JQT1iJsA4hConM&vet=12ahUKEwivmPnOxa6NAxVEVEEAHVj3HloQM3oECBoQAA..i&w=720&h=475&hcb=2&ved=2ahUKEwivmPnOxa6NAxVEVEEAHVj3HloQM3oECBoQAA" class="mx-auto mb-4 rounded-full" alt="Healthy Food" />
+        <img src="{{ url_for('static', filename='images/3.png') }}" alt="burger" class="mx-auto mb-4 rounded-full" />
         <h3 class="text-xl font-semibold mb-2">Healthy Options</h3>
         <p class="text-gray-600">Choose from a variety of delicious, health-conscious dishes.</p>
       </div>

@@ -147,23 +147,50 @@ def cart():
 
     return render_template('cart.html', items=cart_items, total=total)
 
+
+
 @app.route('/checkout', methods=['GET', 'POST'])
 def checkout():
+    cart = session.get('cart', {})
+    item_ids = list(cart.keys())
+    items = MenuItem.query.filter(MenuItem.id.in_(item_ids)).all()
+
+    subtotal = sum(item.price * cart[str(item.id)] for item in items)
+
+    # Only apply fees if subtotal > 0
+    if subtotal > 0:
+        delivery_fee = 3.00 if subtotal < 15 else 0.00
+        service_fee = 1.50
+    else:
+        delivery_fee = 0.00
+        service_fee = 0.00
+
+    total = subtotal + delivery_fee + service_fee
+
     if request.method == 'POST':
+        if subtotal <= 0:
+            flash('You must add at least one item to place an order.')
+            return redirect(url_for('cart'))
+
         name = request.form['name']
         address = request.form['address']
         phone = request.form['phone']
-        cart = session.get('cart', {})
-        item_ids = list(cart.keys())
-        items = MenuItem.query.filter(MenuItem.id.in_(item_ids)).all()
-        total = sum(item.price * cart[str(item.id)] for item in items)
         item_str = ','.join([f"{item.id}:{cart[str(item.id)]}" for item in items])
         new_order = Order(customer_name=name, address=address, phone=phone, items=item_str, total=total)
         db.session.add(new_order)
         db.session.commit()
         session['cart'] = {}
         return redirect(url_for('confirmation'))
-    return render_template('checkout.html')
+
+    return render_template(
+        'checkout.html',
+        subtotal=subtotal,
+        delivery_fee=delivery_fee,
+        service_fee=service_fee,
+        total=total
+    )
+
+
 
 @app.route('/confirmation')
 def confirmation():

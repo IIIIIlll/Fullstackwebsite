@@ -8,14 +8,86 @@
 <body class="bg-[#f7f7f7] text-gray-800">
   <div class="max-w-xl mx-auto py-12 px-6">
     <h1 class="text-3xl font-bold mb-8 text-center">Checkout</h1>
+
     <form method="POST" class="space-y-6">
+
+      
+    <!-- Full price breakdown -->
+<div class="text-center text-lg space-y-1">
+  <p>Subtotal: <span class="font-semibold">£{{ '%.2f' % subtotal }}</span></p>
+  <p>Delivery Fee: 
+    {% if delivery_fee == 0 %}
+      <span class="text-green-600 font-semibold">Free</span>
+    {% else %}
+      <span class="text-gray-700">£{{ '%.2f' % delivery_fee }}</span>
+    {% endif %}
+  </p>
+  <p>Service Fee: <span class="text-gray-700">£{{ '%.2f' % service_fee }}</span></p>
+  <p>Total: <span class="font-bold text-xl">£{{ '%.2f' % total }}</span></p>
+  {% if subtotal < 15 and subtotal > 0 %}
+    <p class="text-red-600 text-sm">Spend £{{ '%.2f' % (15 - subtotal) }} more to get free delivery!</p>
+  {% elif subtotal >= 15 %}
+    <p class="text-green-600 text-sm">You qualify for free delivery!</p>
+  {% endif %}
+</div>
+
+
       <input type="text" name="name" placeholder="Name" class="w-full border rounded px-4 py-2" required>
       <input type="text" name="address" placeholder="Address" class="w-full border rounded px-4 py-2" required>
       <input type="text" name="phone" placeholder="Phone" class="w-full border rounded px-4 py-2" required>
+
+      {% if subtotal > 0 %}
+  <!-- Payment Method -->
+  <div>
+    <label for="payment-method" class="block mb-2 font-medium">Payment Method</label>
+    <select name="payment" id="payment-method" class="w-full border rounded px-4 py-2" required>
+      <option value="">Select a payment method</option>
+      <option value="card">Credit/Debit Card</option>
+      <option value="paypal">PayPal</option>
+      <option value="cash">Cash on Delivery</option>
+    </select>
+  </div>
+
+  <!-- Card Fields -->
+  <div id="card-fields" class="hidden mt-4 space-y-3">
+    <input type="text" placeholder="Card Number" class="w-full border rounded px-4 py-2" required>
+    <input type="text" placeholder="Expiry Date (MM/YY)" class="w-full border rounded px-4 py-2" required>
+    <input type="text" placeholder="CVV" class="w-full border rounded px-4 py-2" required>
+  </div>
+
+  <!-- PayPal Login -->
+  <div id="paypal-login" class="hidden mt-4">
+    <button type="button" class="bg-yellow-500 text-white px-4 py-2 rounded">Login with PayPal</button>
+  </div>
+{% endif %}
+
+
+      <!-- Submit Button -->
       <div class="text-center">
-        <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">Place Order</button>
+        <button type="submit" class="mt-4 bg-blue-600 text-white px-7 py-2 rounded hover:bg-blue-700 {% if subtotal == 0 %}opacity-50 cursor-not-allowed{% endif %}" {% if subtotal == 0 %}disabled{% endif %}>
+  Place Order
+</button>
+
       </div>
     </form>
   </div>
+
+  <script>
+    const paymentSelect = document.getElementById('payment-method');
+    const cardFields = document.getElementById('card-fields');
+    const paypalLogin = document.getElementById('paypal-login');
+
+    paymentSelect.addEventListener('change', function () {
+      const selected = this.value;
+      cardFields.classList.add('hidden');
+      paypalLogin.classList.add('hidden');
+
+      if (selected === 'card') {
+        cardFields.classList.remove('hidden');
+      } else if (selected === 'paypal') {
+        paypalLogin.classList.remove('hidden');
+      }
+    });
+  </script>
 </body>
 </html>
